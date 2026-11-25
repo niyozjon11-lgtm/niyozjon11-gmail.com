@@ -1,0 +1,6 @@
+{
+  "name": "Xarajatlar Hisobi",
+  "description": "Shaxsiy xarajatlarni kategoriya, sana va vaqt bo'yicha oson hisoblab borish uchun o'zbek tilidagi veb-ilova.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

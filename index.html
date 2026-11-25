@@ -1,0 +1,1463 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xarajatlar Hisobi</title>
+    <meta
+      name="description"
+      content="Shaxsiy xarajatlarni kategoriya, sana va vaqt bo'yicha oson hisoblab borish uchun o'zbek tilidagi veb-ilova."
+    />
+    <meta property="og:title" content="Xarajatlar Hisobi" />
+    <meta
+      property="og:description"
+      content="Shaxsiy xarajatlarni kategoriya, sana va vaqt bo'yicha oson hisoblab borish uchun o'zbek tilidagi veb-ilova."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-canvas: #f8fafc;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f1f5f9;
+        --border-hairline: #e2e8f0;
+        --border-focus: #0f766e;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #64748b;
+        --accent: #0f766e;
+        --accent-hover: #115e59;
+        --accent-soft: #f0fdfa;
+        --danger: #dc2626;
+        --danger-soft: #fef2f2;
+        --radius-lg: 12px;
+        --radius-md: 8px;
+        --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--bg-canvas);
+        color: var(--text-primary);
+        font-family: var(--font-sans);
+        font-size: 15px;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .app-shell {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Top Bar */
+      .topbar {
+        background-color: var(--bg-surface);
+        border-bottom: 1px solid var(--border-hairline);
+      }
+
+      .topbar-inner {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 16px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+      }
+
+      .brand {
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        white-space: nowrap;
+        flex-shrink: 0;
+        text-decoration: none;
+      }
+
+      .topbar-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+
+      /* Main Container */
+      .container {
+        width: 100%;
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 28px 24px 48px;
+        flex: 1;
+      }
+
+      /* Page Heading & Summary Strip */
+      .summary-strip {
+        background-color: var(--bg-surface);
+        border: 1px solid var(--border-hairline);
+        border-radius: var(--radius-lg);
+        display: grid;
+        grid-template-columns: 1.6fr 1fr 1fr;
+        margin-bottom: 24px;
+      }
+
+      .summary-cell {
+        padding: 20px 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .summary-cell + .summary-cell {
+        border-left: 1px solid var(--border-hairline);
+      }
+
+      .summary-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
+
+      .summary-value {
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
+        font-size: 26px;
+        font-weight: 600;
+        color: var(--text-primary);
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+      }
+
+      .summary-value.accent {
+        color: var(--accent);
+      }
+
+      /* Workspace Grid */
+      .workspace-grid {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+
+      .panel {
+        background-color: var(--bg-surface);
+        border: 1px solid var(--border-hairline);
+        border-radius: var(--radius-lg);
+      }
+
+      .panel-header {
+        padding: 18px 22px;
+        border-bottom: 1px solid var(--border-hairline);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .panel-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-wrap: balance;
+      }
+
+      .panel-body {
+        padding: 22px;
+      }
+
+      /* Form Controls */
+      .form-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .field-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      label {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      input[type='text'],
+      input[type='number'],
+      input[type='datetime-local'],
+      select {
+        width: 100%;
+        min-height: 42px;
+        padding: 9px 12px;
+        font-family: var(--font-sans);
+        font-size: 14px;
+        color: var(--text-primary);
+        background-color: var(--bg-surface);
+        border: 1px solid var(--border-hairline);
+        border-radius: var(--radius-md);
+        transition: border-color 150ms cubic-bezier(0.16, 1, 0.3, 1),
+          box-shadow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      input[type='number'],
+      input[type='datetime-local'] {
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
+      }
+
+      input:focus-visible,
+      select:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--border-focus);
+        outline-offset: 2px;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--border-focus);
+      }
+
+      /* Inline Add Category */
+      .category-divider {
+        margin-top: 20px;
+        padding-top: 18px;
+        border-top: 1px solid var(--border-hairline);
+      }
+
+      .inline-add-row {
+        display: flex;
+        gap: 8px;
+        align-items: stretch;
+      }
+
+      .inline-add-row input {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        min-height: 42px;
+        padding: 10px 18px;
+        font-family: var(--font-sans);
+        font-size: 14px;
+        font-weight: 600;
+        border-radius: var(--radius-md);
+        border: 1px solid transparent;
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+        transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1),
+          border-color 150ms cubic-bezier(0.16, 1, 0.3, 1),
+          color 150ms cubic-bezier(0.16, 1, 0.3, 1),
+          transform 100ms ease;
+      }
+
+      .btn:active {
+        transform: scale(0.99);
+      }
+
+      .btn-primary {
+        background-color: var(--accent);
+        color: #ffffff;
+        width: 100%;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--accent-hover);
+      }
+
+      .btn-secondary {
+        background-color: var(--bg-subtle);
+        color: var(--text-primary);
+        border-color: var(--border-hairline);
+      }
+
+      .btn-secondary:hover {
+        background-color: #e2e8f0;
+      }
+
+      .btn-ghost {
+        background-color: transparent;
+        color: var(--text-secondary);
+        min-height: 36px;
+        padding: 6px 12px;
+        font-size: 13px;
+      }
+
+      .btn-ghost:hover {
+        background-color: var(--bg-subtle);
+        color: var(--text-primary);
+      }
+
+      .btn-danger-ghost {
+        background-color: transparent;
+        color: var(--text-muted);
+        min-height: 36px;
+        padding: 6px 10px;
+        font-size: 13px;
+      }
+
+      .btn-danger-ghost:hover {
+        background-color: var(--danger-soft);
+        color: var(--danger);
+      }
+
+      .text-action-btn {
+        background: none;
+        border: none;
+        padding: 2px 4px;
+        font-family: var(--font-sans);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--accent);
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .text-action-btn:hover {
+        text-decoration: underline;
+      }
+
+      /* Feedback Message */
+      .form-feedback {
+        font-size: 13px;
+        font-weight: 500;
+        min-height: 20px;
+        margin: 0;
+      }
+
+      .form-feedback.error {
+        color: var(--danger);
+      }
+
+      .form-feedback.success {
+        color: var(--accent);
+      }
+
+      /* Category Manager List */
+      .category-list-bar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      .category-manage-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        background-color: var(--bg-subtle);
+        border-radius: 6px;
+      }
+
+      .category-remove-btn {
+        background: none;
+        border: none;
+        padding: 0;
+        width: 18px;
+        height: 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        line-height: 1;
+        color: var(--text-muted);
+        cursor: pointer;
+        border-radius: 4px;
+      }
+
+      .category-remove-btn:hover {
+        color: var(--danger);
+        background-color: var(--danger-soft);
+      }
+
+      /* Filter Toolbar */
+      .filter-toolbar {
+        padding: 12px 22px;
+        border-bottom: 1px solid var(--border-hairline);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        background-color: #fcfdfe;
+      }
+
+      .filter-tabs {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px;
+        background-color: var(--bg-subtle);
+        border-radius: var(--radius-md);
+        flex-wrap: wrap;
+      }
+
+      .filter-tab {
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-family: var(--font-sans);
+        font-size: 13px;
+        font-weight: 500;
+        padding: 6px 12px;
+        min-height: 32px;
+        border-radius: 6px;
+        cursor: pointer;
+        white-space: nowrap;
+        flex-shrink: 0;
+        transition: background-color 150ms cubic-bezier(0.16, 1, 0.3, 1),
+          color 150ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      .filter-tab:hover {
+        color: var(--text-primary);
+      }
+
+      .filter-tab.active {
+        background-color: var(--bg-surface);
+        color: var(--text-primary);
+        font-weight: 600;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      }
+
+      /* Expense List */
+      .expense-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .expense-row {
+        padding: 14px 22px;
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        align-items: center;
+        gap: 16px;
+        border-bottom: 1px solid var(--border-hairline);
+        transition: background-color 120ms ease;
+      }
+
+      .expense-row:last-child {
+        border-bottom: none;
+      }
+
+      .expense-row:hover {
+        background-color: #f8fafc;
+      }
+
+      .expense-main {
+        min-width: 0;
+      }
+
+      .expense-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .expense-meta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--text-muted);
+        flex-wrap: wrap;
+      }
+
+      .expense-meta-time {
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
+        font-size: 12px;
+      }
+
+      .expense-amount {
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .expense-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      /* Inline Edit Row */
+      .expense-edit-form {
+        padding: 16px 22px;
+        border-bottom: 1px solid var(--border-hairline);
+        background-color: var(--accent-soft);
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr 0.9fr 1.2fr auto;
+        gap: 10px;
+        align-items: end;
+      }
+
+      .expense-edit-form:last-child {
+        border-bottom: none;
+      }
+
+      .edit-actions {
+        display: flex;
+        gap: 6px;
+      }
+
+      /* List Footer Total */
+      .list-footer {
+        padding: 16px 22px;
+        border-top: 1px solid var(--border-hairline);
+        background-color: #fcfdfe;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      }
+
+      .list-footer-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      .list-footer-value {
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      /* Empty State */
+      .empty-state {
+        padding: 56px 24px;
+        text-align: center;
+      }
+
+      .empty-title {
+        margin: 0 0 6px;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .empty-desc {
+        margin: 0;
+        font-size: 14px;
+        color: var(--text-muted);
+      }
+
+      /* Confirm Clear Bar */
+      .confirm-clear-bar {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .confirm-text {
+        font-size: 13px;
+        color: var(--danger);
+        font-weight: 500;
+      }
+
+      @media (max-width: 960px) {
+        .workspace-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .expense-edit-form {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .topbar-inner {
+          padding: 14px 16px;
+        }
+
+        .container {
+          padding: 18px 16px 40px;
+        }
+
+        .summary-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .summary-cell + .summary-cell {
+          border-left: none;
+          border-top: 1px solid var(--border-hairline);
+        }
+
+        .expense-row {
+          grid-template-columns: 1fr auto;
+          gap: 10px 12px;
+          padding: 14px 16px;
+        }
+
+        .expense-actions {
+          grid-column: 1 / -1;
+          justify-content: flex-end;
+        }
+
+        .expense-edit-form {
+          grid-template-columns: 1fr;
+          padding: 16px;
+        }
+
+        .panel-body,
+        .panel-header,
+        .filter-toolbar,
+        .list-footer {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="topbar-inner">
+          <a href="#" class="brand" id="brandLink">Xarajatlar Hisobi</a>
+          <div class="topbar-actions" id="topbarActions"></div>
+        </div>
+      </header>
+
+      <main class="container">
+        <section class="summary-strip" aria-label="Umumiy ko'rsatkichlar">
+          <div class="summary-cell">
+            <span class="summary-label">Jami sarflangan summa</span>
+            <span class="summary-value accent" id="totalAmountDisplay">0 so'm</span>
+          </div>
+          <div class="summary-cell">
+            <span class="summary-label">Xarajatlar soni</span>
+            <span class="summary-value" id="totalCountDisplay">0 ta</span>
+          </div>
+          <div class="summary-cell">
+            <span class="summary-label">Faol kategoriyalar</span>
+            <span class="summary-value" id="totalCategoriesDisplay">0 ta</span>
+          </div>
+        </section>
+
+        <div class="workspace-grid">
+          <section class="panel" aria-labelledby="addExpenseTitle">
+            <div class="panel-header">
+              <h1 class="panel-title" id="addExpenseTitle">Yangi xarajat qo'shish</h1>
+            </div>
+            <div class="panel-body">
+              <form id="expenseForm" class="form-stack" novalidate>
+                <div class="field">
+                  <label for="expenseName">Xarajat nomi</label>
+                  <input
+                    id="expenseName"
+                    type="text"
+                    placeholder="Masalan: Tushlik, Taksi, Non"
+                    maxlength="80"
+                    autocomplete="off"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="expenseAmount">Summa (so'm)</label>
+                  <input
+                    id="expenseAmount"
+                    type="number"
+                    inputmode="numeric"
+                    min="1"
+                    step="1"
+                    placeholder="Masalan: 35000"
+                    required
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="expenseCategory">Kategoriya</label>
+                  <select id="expenseCategory" required></select>
+                </div>
+
+                <div class="field">
+                  <div class="field-label-row">
+                    <label for="expenseDateTime">Sana va vaqt</label>
+                    <button type="button" class="text-action-btn" id="resetNowBtn">
+                      Hozirgi vaqt
+                    </button>
+                  </div>
+                  <input id="expenseDateTime" type="datetime-local" required />
+                </div>
+
+                <p class="form-feedback" id="formFeedback" role="status" aria-live="polite"></p>
+
+                <button type="submit" class="btn btn-primary">Xarajatni qo'shish</button>
+              </form>
+
+              <div class="category-divider">
+                <form id="categoryForm" class="field" novalidate>
+                  <label for="newCategoryInput">Yangi kategoriya qo'shish</label>
+                  <div class="inline-add-row">
+                    <input
+                      id="newCategoryInput"
+                      type="text"
+                      placeholder="Masalan: Dorixona"
+                      maxlength="32"
+                      autocomplete="off"
+                    />
+                    <button type="submit" class="btn btn-secondary">Qo'shish</button>
+                  </div>
+                </form>
+                <p class="form-feedback" id="categoryFeedback" role="status" aria-live="polite"></p>
+                <div class="category-list-bar" id="categoryManageList" aria-label="Mavjud kategoriyalar"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="expenseListTitle">
+            <div class="panel-header">
+              <h2 class="panel-title" id="expenseListTitle">Xarajatlar ro'yxati</h2>
+              <span class="summary-label" id="filteredCountText"></span>
+            </div>
+
+            <div class="filter-toolbar" id="filterToolbar">
+              <div class="filter-tabs" id="filterTabs" role="tablist" aria-label="Kategoriya bo'yicha saralash"></div>
+            </div>
+
+            <div id="expenseListContainer"></div>
+
+            <div class="list-footer" id="listFooter">
+              <span class="list-footer-label" id="listFooterLabel">Jami sarflangan:</span>
+              <span class="list-footer-value" id="listFooterTotal">0 so'm</span>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        'use strict';
+
+        var STORAGE_EXPENSES_KEY = 'xarajatlar_app_expenses_v1';
+        var STORAGE_CATEGORIES_KEY = 'xarajatlar_app_categories_v1';
+        var DEFAULT_CATEGORIES = ['Ovqat', 'Taksi', 'Kiyim', 'Boshqa'];
+
+        var expenses = [];
+        var categories = [];
+        var activeFilter = 'Barchasi';
+        var editingExpenseId = null;
+        var confirmingClearAll = false;
+        var dateWasManuallyEdited = false;
+
+        // DOM Elements
+        var expenseForm = document.getElementById('expenseForm');
+        var expenseNameInput = document.getElementById('expenseName');
+        var expenseAmountInput = document.getElementById('expenseAmount');
+        var expenseCategorySelect = document.getElementById('expenseCategory');
+        var expenseDateTimeInput = document.getElementById('expenseDateTime');
+        var resetNowBtn = document.getElementById('resetNowBtn');
+        var formFeedback = document.getElementById('formFeedback');
+
+        var categoryForm = document.getElementById('categoryForm');
+        var newCategoryInput = document.getElementById('newCategoryInput');
+        var categoryFeedback = document.getElementById('categoryFeedback');
+        var categoryManageList = document.getElementById('categoryManageList');
+
+        var totalAmountDisplay = document.getElementById('totalAmountDisplay');
+        var totalCountDisplay = document.getElementById('totalCountDisplay');
+        var totalCategoriesDisplay = document.getElementById('totalCategoriesDisplay');
+
+        var filterTabs = document.getElementById('filterTabs');
+        var filteredCountText = document.getElementById('filteredCountText');
+        var expenseListContainer = document.getElementById('expenseListContainer');
+        var listFooterLabel = document.getElementById('listFooterLabel');
+        var listFooterTotal = document.getElementById('listFooterTotal');
+        var topbarActions = document.getElementById('topbarActions');
+
+        function toLocalDateTimeInputValue(date) {
+          var pad = function (n) {
+            return String(n).padStart(2, '0');
+          };
+          return (
+            date.getFullYear() +
+            '-' +
+            pad(date.getMonth() + 1) +
+            '-' +
+            pad(date.getDate()) +
+            'T' +
+            pad(date.getHours()) +
+            ':' +
+            pad(date.getMinutes())
+          );
+        }
+
+        function formatCurrency(amount) {
+          var num = Math.round(Number(amount) || 0);
+          return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + " so'm";
+        }
+
+        function formatDisplayDateTime(isoLocal) {
+          if (!isoLocal) return '';
+          var parts = isoLocal.split('T');
+          if (parts.length !== 2) return isoLocal;
+          var dateParts = parts[0].split('-');
+          if (dateParts.length !== 3) return isoLocal;
+          var months = [
+            'yan',
+            'fev',
+            'mar',
+            'apr',
+            'may',
+            'iyun',
+            'iyul',
+            'avg',
+            'sen',
+            'okt',
+            'noy',
+            'dek',
+          ];
+          var year = dateParts[0];
+          var monthIndex = parseInt(dateParts[1], 10) - 1;
+          var day = parseInt(dateParts[2], 10);
+          var time = parts[1].slice(0, 5);
+          var monthLabel = months[monthIndex] || dateParts[1];
+          return day + ' ' + monthLabel + ' ' + year + ', ' + time;
+        }
+
+        function generateId() {
+          if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+            return window.crypto.randomUUID();
+          }
+          return 'exp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+        }
+
+        function loadState() {
+          try {
+            var savedCategories = JSON.parse(localStorage.getItem(STORAGE_CATEGORIES_KEY) || 'null');
+            if (Array.isArray(savedCategories) && savedCategories.length > 0) {
+              categories = savedCategories.filter(function (c) {
+                return typeof c === 'string' && c.trim().length > 0;
+              });
+            } else {
+              categories = DEFAULT_CATEGORIES.slice();
+            }
+          } catch (e) {
+            categories = DEFAULT_CATEGORIES.slice();
+          }
+
+          if (categories.length === 0) {
+            categories = DEFAULT_CATEGORIES.slice();
+          }
+
+          try {
+            var savedExpenses = JSON.parse(localStorage.getItem(STORAGE_EXPENSES_KEY) || 'null');
+            if (Array.isArray(savedExpenses)) {
+              expenses = savedExpenses.filter(function (item) {
+                return (
+                  item &&
+                  typeof item.id === 'string' &&
+                  typeof item.name === 'string' &&
+                  typeof item.amount === 'number' &&
+                  isFinite(item.amount)
+                );
+              });
+            } else {
+              expenses = [];
+            }
+          } catch (e) {
+            expenses = [];
+          }
+        }
+
+        function saveCategories() {
+          try {
+            localStorage.setItem(STORAGE_CATEGORIES_KEY, JSON.stringify(categories));
+          } catch (e) {
+            // Ignore storage quota errors cleanly
+          }
+        }
+
+        function saveExpenses() {
+          try {
+            localStorage.setItem(STORAGE_EXPENSES_KEY, JSON.stringify(expenses));
+          } catch (e) {
+            // Ignore storage quota errors cleanly
+          }
+        }
+
+        function showFeedback(el, message, type) {
+          el.textContent = message;
+          el.className = 'form-feedback' + (type ? ' ' + type : '');
+        }
+
+        function setCurrentDateTime() {
+          expenseDateTimeInput.value = toLocalDateTimeInputValue(new Date());
+          dateWasManuallyEdited = false;
+        }
+
+        function renderCategoryOptions(selectedValue) {
+          var current = selectedValue || expenseCategorySelect.value;
+          expenseCategorySelect.innerHTML = '';
+
+          categories.forEach(function (cat) {
+            var opt = document.createElement('option');
+            opt.value = cat;
+            opt.textContent = cat;
+            expenseCategorySelect.appendChild(opt);
+          });
+
+          if (current && categories.indexOf(current) !== -1) {
+            expenseCategorySelect.value = current;
+          } else if (categories.length > 0) {
+            expenseCategorySelect.value = categories[0];
+          }
+        }
+
+        function renderCategoryManageList() {
+          categoryManageList.innerHTML = '';
+          categories.forEach(function (cat) {
+            var item = document.createElement('span');
+            item.className = 'category-manage-item';
+
+            var label = document.createElement('span');
+            label.textContent = cat;
+            item.appendChild(label);
+
+            if (categories.length > 1) {
+              var removeBtn = document.createElement('button');
+              removeBtn.type = 'button';
+              removeBtn.className = 'category-remove-btn';
+              removeBtn.setAttribute('aria-label', cat + " kategoriyasini o'chirish");
+              removeBtn.title = "O'chirish";
+              removeBtn.textContent = '×';
+              removeBtn.addEventListener('click', function () {
+                categories = categories.filter(function (c) {
+                  return c !== cat;
+                });
+                if (activeFilter === cat) {
+                  activeFilter = 'Barchasi';
+                }
+                saveCategories();
+                renderAll();
+              });
+              item.appendChild(removeBtn);
+            }
+
+            categoryManageList.appendChild(item);
+          });
+        }
+
+        function renderFilterTabs() {
+          filterTabs.innerHTML = '';
+          var filterOptions = ['Barchasi'].concat(categories);
+
+          // Also include categories that exist in old expenses even if removed from active list
+          expenses.forEach(function (exp) {
+            if (exp.category && filterOptions.indexOf(exp.category) === -1) {
+              filterOptions.push(exp.category);
+            }
+          });
+
+          if (filterOptions.indexOf(activeFilter) === -1) {
+            activeFilter = 'Barchasi';
+          }
+
+          filterOptions.forEach(function (cat) {
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'filter-tab' + (activeFilter === cat ? ' active' : '');
+            btn.textContent = cat;
+            btn.setAttribute('role', 'tab');
+            btn.setAttribute('aria-selected', activeFilter === cat ? 'true' : 'false');
+            btn.addEventListener('click', function () {
+              activeFilter = cat;
+              editingExpenseId = null;
+              renderExpensesSection();
+            });
+            filterTabs.appendChild(btn);
+          });
+        }
+
+        function renderSummary() {
+          var grandTotal = expenses.reduce(function (sum, item) {
+            return sum + item.amount;
+          }, 0);
+
+          totalAmountDisplay.textContent = formatCurrency(grandTotal);
+          totalCountDisplay.textContent = expenses.length + ' ta';
+          totalCategoriesDisplay.textContent = categories.length + ' ta';
+        }
+
+        function renderTopbarActions() {
+          topbarActions.innerHTML = '';
+          if (expenses.length === 0) {
+            confirmingClearAll = false;
+            return;
+          }
+
+          if (!confirmingClearAll) {
+            var clearBtn = document.createElement('button');
+            clearBtn.type = 'button';
+            clearBtn.className = 'btn btn-danger-ghost';
+            clearBtn.textContent = "Ro'yxatni tozalash";
+            clearBtn.addEventListener('click', function () {
+              confirmingClearAll = true;
+              renderTopbarActions();
+            });
+            topbarActions.appendChild(clearBtn);
+          } else {
+            var bar = document.createElement('div');
+            bar.className = 'confirm-clear-bar';
+
+            var msg = document.createElement('span');
+            msg.className = 'confirm-text';
+            msg.textContent = "Barchasini o'chiraymi?";
+            bar.appendChild(msg);
+
+            var yesBtn = document.createElement('button');
+            yesBtn.type = 'button';
+            yesBtn.className = 'btn btn-danger-ghost';
+            yesBtn.style.fontWeight = '600';
+            yesBtn.style.color = '#dc2626';
+            yesBtn.textContent = "Ha, o'chirish";
+            yesBtn.addEventListener('click', function () {
+              expenses = [];
+              editingExpenseId = null;
+              confirmingClearAll = false;
+              saveExpenses();
+              renderAll();
+            });
+            bar.appendChild(yesBtn);
+
+            var cancelBtn = document.createElement('button');
+            cancelBtn.type = 'button';
+            cancelBtn.className = 'btn btn-ghost';
+            cancelBtn.textContent = 'Bekor qilish';
+            cancelBtn.addEventListener('click', function () {
+              confirmingClearAll = false;
+              renderTopbarActions();
+            });
+            bar.appendChild(cancelBtn);
+
+            topbarActions.appendChild(bar);
+          }
+        }
+
+        function createEditRow(item) {
+          var form = document.createElement('form');
+          form.className = 'expense-edit-form';
+          form.noValidate = true;
+
+          // Name field
+          var nameWrap = document.createElement('div');
+          nameWrap.className = 'field';
+          var nameLbl = document.createElement('label');
+          nameLbl.textContent = 'Nomi';
+          var nameInp = document.createElement('input');
+          nameInp.type = 'text';
+          nameInp.value = item.name;
+          nameInp.maxLength = 80;
+          nameInp.required = true;
+          nameWrap.appendChild(nameLbl);
+          nameWrap.appendChild(nameInp);
+
+          // Amount field
+          var amtWrap = document.createElement('div');
+          amtWrap.className = 'field';
+          var amtLbl = document.createElement('label');
+          amtLbl.textContent = "Summa (so'm)";
+          var amtInp = document.createElement('input');
+          amtInp.type = 'number';
+          amtInp.min = '1';
+          amtInp.step = '1';
+          amtInp.value = String(item.amount);
+          amtInp.required = true;
+          amtWrap.appendChild(amtLbl);
+          amtWrap.appendChild(amtInp);
+
+          // Category field
+          var catWrap = document.createElement('div');
+          catWrap.className = 'field';
+          var catLbl = document.createElement('label');
+          catLbl.textContent = 'Kategoriya';
+          var catSel = document.createElement('select');
+          var catOpts = categories.slice();
+          if (item.category && catOpts.indexOf(item.category) === -1) {
+            catOpts.push(item.category);
+          }
+          catOpts.forEach(function (c) {
+            var o = document.createElement('option');
+            o.value = c;
+            o.textContent = c;
+            catSel.appendChild(o);
+          });
+          catSel.value = item.category;
+          catWrap.appendChild(catLbl);
+          catWrap.appendChild(catSel);
+
+          // DateTime field
+          var dtWrap = document.createElement('div');
+          dtWrap.className = 'field';
+          var dtLbl = document.createElement('label');
+          dtLbl.textContent = 'Sana va vaqt';
+          var dtInp = document.createElement('input');
+          dtInp.type = 'datetime-local';
+          dtInp.value = item.dateTime;
+          dtInp.required = true;
+          dtWrap.appendChild(dtLbl);
+          dtWrap.appendChild(dtInp);
+
+          // Action buttons
+          var actWrap = document.createElement('div');
+          actWrap.className = 'edit-actions';
+
+          var saveBtn = document.createElement('button');
+          saveBtn.type = 'submit';
+          saveBtn.className = 'btn btn-secondary';
+          saveBtn.style.minHeight = '42px';
+          saveBtn.textContent = 'Saqlash';
+
+          var cancelBtn = document.createElement('button');
+          cancelBtn.type = 'button';
+          cancelBtn.className = 'btn btn-ghost';
+          cancelBtn.style.minHeight = '42px';
+          cancelBtn.textContent = 'Bekor';
+          cancelBtn.addEventListener('click', function () {
+            editingExpenseId = null;
+            renderExpensesSection();
+          });
+
+          actWrap.appendChild(saveBtn);
+          actWrap.appendChild(cancelBtn);
+
+          form.appendChild(nameWrap);
+          form.appendChild(amtWrap);
+          form.appendChild(catWrap);
+          form.appendChild(dtWrap);
+          form.appendChild(actWrap);
+
+          form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var newName = nameInp.value.trim();
+            var newAmt = Number(amtInp.value);
+            var newCat = catSel.value;
+            var newDt = dtInp.value;
+
+            if (!newName || !isFinite(newAmt) || newAmt <= 0 || !newDt) {
+              return;
+            }
+
+            expenses = expenses.map(function (exp) {
+              if (exp.id === item.id) {
+                return {
+                  id: exp.id,
+                  name: newName,
+                  amount: Math.round(newAmt),
+                  category: newCat,
+                  dateTime: newDt,
+                };
+              }
+              return exp;
+            });
+
+            editingExpenseId = null;
+            saveExpenses();
+            renderAll();
+          });
+
+          return form;
+        }
+
+        function renderExpensesSection() {
+          renderFilterTabs();
+
+          var sorted = expenses.slice().sort(function (a, b) {
+            return (b.dateTime || '').localeCompare(a.dateTime || '');
+          });
+
+          var filtered =
+            activeFilter === 'Barchasi'
+              ? sorted
+              : sorted.filter(function (item) {
+                  return item.category === activeFilter;
+                });
+
+          var filteredTotal = filtered.reduce(function (sum, item) {
+            return sum + item.amount;
+          }, 0);
+
+          filteredCountText.textContent = filtered.length + ' ta yozuv';
+          listFooterLabel.textContent =
+            activeFilter === 'Barchasi'
+              ? 'Jami sarflangan:'
+              : activeFilter + ' bo‘yicha jami:';
+          listFooterTotal.textContent = formatCurrency(filteredTotal);
+
+          expenseListContainer.innerHTML = '';
+
+          if (filtered.length === 0) {
+            var empty = document.createElement('div');
+            empty.className = 'empty-state';
+
+            var title = document.createElement('p');
+            title.className = 'empty-title';
+            title.textContent =
+              expenses.length === 0
+                ? "Hozircha xarajatlar qo'shilmagan"
+                : 'Bu kategoriyada xarajat topilmadi';
+
+            var desc = document.createElement('p');
+            desc.className = 'empty-desc';
+            desc.textContent =
+              expenses.length === 0
+                ? "Chap tomondagi forma orqali birinchi xarajatingizni kiriting."
+                : "Boshqa kategoriyani tanlang yoki ushbu kategoriyaga xarajat qo'shing.";
+
+            empty.appendChild(title);
+            empty.appendChild(desc);
+            expenseListContainer.appendChild(empty);
+            return;
+          }
+
+          var ul = document.createElement('ul');
+          ul.className = 'expense-list';
+
+          filtered.forEach(function (item) {
+            var li = document.createElement('li');
+
+            if (editingExpenseId === item.id) {
+              li.appendChild(createEditRow(item));
+            } else {
+              li.className = 'expense-row';
+
+              var main = document.createElement('div');
+              main.className = 'expense-main';
+
+              var nameEl = document.createElement('p');
+              nameEl.className = 'expense-name';
+              nameEl.textContent = item.name;
+
+              var metaEl = document.createElement('div');
+              metaEl.className = 'expense-meta';
+
+              var catSpan = document.createElement('span');
+              catSpan.textContent = item.category;
+
+              var sep = document.createElement('span');
+              sep.setAttribute('aria-hidden', 'true');
+              sep.textContent = '·';
+
+              var timeSpan = document.createElement('span');
+              timeSpan.className = 'expense-meta-time';
+              timeSpan.textContent = formatDisplayDateTime(item.dateTime);
+
+              metaEl.appendChild(catSpan);
+              metaEl.appendChild(sep);
+              metaEl.appendChild(timeSpan);
+
+              main.appendChild(nameEl);
+              main.appendChild(metaEl);
+
+              var amountEl = document.createElement('div');
+              amountEl.className = 'expense-amount';
+              amountEl.textContent = formatCurrency(item.amount);
+
+              var actionsEl = document.createElement('div');
+              actionsEl.className = 'expense-actions';
+
+              var editBtn = document.createElement('button');
+              editBtn.type = 'button';
+              editBtn.className = 'btn btn-ghost';
+              editBtn.textContent = 'Tahrirlash';
+              editBtn.addEventListener('click', function () {
+                editingExpenseId = item.id;
+                renderExpensesSection();
+              });
+
+              var deleteBtn = document.createElement('button');
+              deleteBtn.type = 'button';
+              deleteBtn.className = 'btn btn-danger-ghost';
+              deleteBtn.textContent = "O'chirish";
+              deleteBtn.addEventListener('click', function () {
+                expenses = expenses.filter(function (exp) {
+                  return exp.id !== item.id;
+                });
+                if (editingExpenseId === item.id) {
+                  editingExpenseId = null;
+                }
+                saveExpenses();
+                renderAll();
+              });
+
+              actionsEl.appendChild(editBtn);
+              actionsEl.appendChild(deleteBtn);
+
+              li.appendChild(main);
+              li.appendChild(amountEl);
+              li.appendChild(actionsEl);
+            }
+
+            ul.appendChild(li);
+          });
+
+          expenseListContainer.appendChild(ul);
+        }
+
+        function renderAll() {
+          renderCategoryOptions();
+          renderCategoryManageList();
+          renderSummary();
+          renderTopbarActions();
+          renderExpensesSection();
+        }
+
+        // Event Listeners
+        expenseDateTimeInput.addEventListener('input', function () {
+          dateWasManuallyEdited = true;
+        });
+
+        resetNowBtn.addEventListener('click', function () {
+          setCurrentDateTime();
+        });
+
+        expenseForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var name = expenseNameInput.value.trim();
+          var rawAmount = expenseAmountInput.value.trim();
+          var amount = Number(rawAmount);
+          var category = expenseCategorySelect.value || categories[0];
+          var dateTime = expenseDateTimeInput.value;
+
+          if (!name) {
+            showFeedback(formFeedback, 'Iltimos, xarajat nomini kiriting.', 'error');
+            expenseNameInput.focus();
+            return;
+          }
+
+          if (!rawAmount || !isFinite(amount) || amount <= 0) {
+            showFeedback(formFeedback, "Iltimos, to'g'ri summa kiriting (0 dan katta).", 'error');
+            expenseAmountInput.focus();
+            return;
+          }
+
+          if (!dateTime) {
+            dateTime = toLocalDateTimeInputValue(new Date());
+          }
+
+          expenses.unshift({
+            id: generateId(),
+            name: name,
+            amount: Math.round(amount),
+            category: category,
+            dateTime: dateTime,
+          });
+
+          saveExpenses();
+
+          expenseNameInput.value = '';
+          expenseAmountInput.value = '';
+          setCurrentDateTime();
+          showFeedback(formFeedback, "Xarajat qo'shildi.", 'success');
+          expenseNameInput.focus();
+
+          renderAll();
+        });
+
+        categoryForm.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var newCat = newCategoryInput.value.trim();
+
+          if (!newCat) {
+            showFeedback(categoryFeedback, 'Kategoriya nomini kiriting.', 'error');
+            newCategoryInput.focus();
+            return;
+          }
+
+          var exists = categories.some(function (c) {
+            return c.toLowerCase() === newCat.toLowerCase();
+          });
+
+          if (exists) {
+            showFeedback(categoryFeedback, 'Bu kategoriya allaqachon mavjud.', 'error');
+            newCategoryInput.focus();
+            return;
+          }
+
+          categories.push(newCat);
+          saveCategories();
+          newCategoryInput.value = '';
+          showFeedback(categoryFeedback, '"' + newCat + '" kategoriyasi qo\'shildi.', 'success');
+
+          renderCategoryOptions(newCat);
+          renderCategoryManageList();
+          renderSummary();
+          renderExpensesSection();
+        });
+
+        // Keep datetime synced if user hasn't manually changed it
+        setInterval(function () {
+          if (!dateWasManuallyEdited && document.activeElement !== expenseDateTimeInput) {
+            expenseDateTimeInput.value = toLocalDateTimeInputValue(new Date());
+          }
+        }, 30000);
+
+        // Initialize App
+        loadState();
+        setCurrentDateTime();
+        renderAll();
+      })();
+    </script>
+  </body>
+</html>
